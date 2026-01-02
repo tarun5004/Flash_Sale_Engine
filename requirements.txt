@@ -1,0 +1,18 @@
+fastapi
+uvicorn[standard]
+
+# Async DB (later phases)
+sqlalchemy[asyncio]
+asyncpg
+alembic
+psycopg2-binary
+
+# Config & Security
+python-dotenv
+pydantic
+passlib[bcrypt]
+python-jose
+
+# Cache & Worker (later phases)
+redis
+celery
