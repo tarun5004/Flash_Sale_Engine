@@ -1,6 +1,6 @@
+"""User Repository - Flash Sale Engine"""
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
-
 from app.models.user import User
 
 
@@ -10,7 +10,7 @@ class UserRepository:
         
     async def create(self, user: User) -> User:
         self.session.add(user)
-        await self.session.flush(user)
+        await self.session.flush()  # flush() bina argument ke call hota hai
         return user 
     
     async def get_by_email(self, email: str) -> User | None:
@@ -19,7 +19,7 @@ class UserRepository:
         )
         return result.scalar_one_or_none()
     
-    async def get_by_id(self, user_id: int) -> User |None:
+    async def get_by_id(self, user_id: int) -> User | None:
         result = await self.session.execute(
             select(User).where(User.id == user_id)
         )

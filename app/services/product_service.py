@@ -111,49 +111,49 @@ class ProductService:
             # 6) Rollback in case of error
             await self.session.rollback()
             raise
-        
-        
-        #PUBLIC SERVICE METHOD - APPLY DISCOUNT
-        async def apply_discount(
-            self,
-            product_id: int,
-            discount_percentage: Decimal,
-        ) -> Product:
-            try:
-                # 1) Validate input
-                self._validate_product_id(product_id)
-                self._validate_price(discount_percentage)
-                
-                # 2) Fetch product with FOR UPDATE lock
-                product = await self._get_product_or_fail(product_id)
-                
-                # 3) Business rule check  # PUBLIC SERVICE METHOD → UPDATE PRICE
-                discounted_price = product.price - (
-                    product.price * discount_percentage / Decimal(100)
-                )
-                
-                # 4) final safety check
-                if discounted_price <= 0:
-                    raise ValueError("Discounted price must be greater than zero")
-                
-                # 5) Update ORM object
-                product.price = discounted_price
-                """We took an ORM object of a row from the product table, 
-                in which price is an attribute."""
-                
-                #✅ Hum ORM object ki state change karte hain
-                #✅ ORM khud decide karta hai kaunsa SQL chalana hai 
-                
-                """Product ORM object database ki ek row ka Python form hota hai,
-                aur uske attributes change karna hi DB update ka signal hota hai."""
-                # 6) Commit transaction
-                await self.session.commit()
-                
-                return product
-            except Exception:
-                # 7) Rollback in case of error
-                await self.session.rollback()
-                raise
+
+    # ✅ FIX: apply_discount method ko class level pe laana tha (4 spaces indent)
+    # ❌ GALTI: Ye method update_price ke ANDAR indent ho gaya tha (8 spaces)
+    # 📌 RULE: Python mein indentation = scope. Galat indent = nested function ban jaata hai
+    #
+    # ✅ FIX 2: Parameter naam "discount_percent" hona chahiye (test file mein yahi use ho raha hai)
+    # ❌ GALTI: "discount_percentage" likha tha lekin test mein "discount_percent" call ho raha tha
+    # 📌 RULE: Function signature aur caller mein parameter names match hone chahiye
+    #
+    # PUBLIC SERVICE METHOD - APPLY DISCOUNT
+    async def apply_discount(
+        self,
+        product_id: int,
+        discount_percent: Decimal,  # ✅ Fixed: discount_percentage -> discount_percent
+    ) -> Product:
+        try:
+            # 1) Validate input
+            self._validate_product_id(product_id)
+            self._validate_discount_percentage(discount_percent)  # ✅ Use proper validator
+            
+            # 2) Fetch product with FOR UPDATE lock
+            product = await self._get_product_or_fail(product_id)
+            
+            # 3) Calculate discounted price
+            discounted_price = product.price - (
+                product.price * discount_percent / Decimal(100)
+            )
+            
+            # 4) Final safety check
+            if discounted_price <= 0:
+                raise ValueError("Discounted price must be greater than zero")
+            
+            # 5) Update ORM object
+            product.price = discounted_price
+            
+            # 6) Commit transaction
+            await self.session.commit()
+            
+            return product
+        except Exception:
+            # 7) Rollback in case of error
+            await self.session.rollback()
+            raise
     # PRIVATE HELPER METHODS (OOP CONCEPT)
 
     async def _get_product_or_fail(self, product_id: int) -> Product:

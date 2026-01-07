@@ -1,18 +1,29 @@
+# Flash Sale Engine - Requirements
+# Install: pip install -r requirements.txt
+
+# Web Framework
 fastapi
 uvicorn[standard]
 
-# Async DB (later phases)
+# Database (Async)
 sqlalchemy[asyncio]
-asyncpg
-alembic
-psycopg2-binary
+aiosqlite           # SQLite ke liye (development)
+asyncpg             # PostgreSQL ke liye (production)
+alembic             # Migrations
+psycopg2-binary     # PostgreSQL driver
 
 # Config & Security
 python-dotenv
 pydantic
-passlib[bcrypt]
-python-jose
+pydantic-settings   # Pydantic v2 mein BaseSettings alag hai
+email-validator     # EmailStr validation ke liye
+passlib[bcrypt]     # Password hashing
+python-jose         # JWT tokens
 
-# Cache & Worker (later phases)
+# Cache & Worker
 redis
 celery
+
+# Testing
+pytest
+pytest-asyncio

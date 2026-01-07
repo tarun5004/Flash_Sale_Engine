@@ -1,8 +1,13 @@
+"""Order Repository - Flash Sale Engine
+
+🐛 BUG FIXED:
+1. selectinload galat import tha: from sqlalchemy -> from sqlalchemy.orm
+"""
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
-from sqlalchemy import selectinload
-
+from sqlalchemy.orm import selectinload  # ✅ FIXED: sqlalchemy.orm se import karna hai
 from app.models.order import Order
+
 
 class OrderRepository:
     def __init__(self, session: AsyncSession):
@@ -10,7 +15,7 @@ class OrderRepository:
             
     async def create(self, order: Order) -> Order:
         self.session.add(order)
-        await self.session.flush(order)
+        await self.session.flush()
         return order
     
     async def get_by_id(self, order_id: int) -> Order | None:
