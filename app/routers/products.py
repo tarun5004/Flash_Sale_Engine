@@ -43,4 +43,8 @@ async def create_product(
         return product
     
     except Exception as e:
-        #
+        #business validation error
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e),
+        )
