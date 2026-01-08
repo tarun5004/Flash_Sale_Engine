@@ -1,0 +1,33 @@
+FastAPI sirf request receive karega
+Service decide karegi kya karna hai  always remember
+
+
+
+whats the meaning of Router
+🌐 Router → duniya (UI / Postman / Swagger) se baat karega
+
+Router = gatekeeper
+Jo aata hai (request) → service ko deta hai
+Jo service deta hai → response bana ke bhejta hai
+
+
+
+
+
+
+why we import modules and whats there mean.
+from fastapi import APIRouter, Depends, HTTPException, status
+❓ Ye kya hai?
+
+APIRouter → routes group karne ke liye
+
+Depends → dependency injection (DB session)
+
+HTTPException → proper API errors
+
+status → HTTP status codes (201, 400, 404)
+
+-- kabhi bhi hum clas name change kare too remember File ka naam matter karta hai import ke liye
+Class ka naam matter karta hai usage ke liye
+
+

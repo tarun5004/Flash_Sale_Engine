@@ -2,7 +2,12 @@ from pydantic import BaseModel
 from decimal import Decimal
 from datetime import datetime
 
-class ProductRead(BaseModel):
+class ProductCreateSchema(BaseModel):
+    name: str
+    price: Decimal
+    stock: int
+
+class ProductResponseSchema(BaseModel):
     id: int
     name: str
     price: Decimal
