@@ -4,6 +4,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.product import Product
 from app.repositories.product_repo import ProductRepository
 
+from typing import List, Optional
+from app.models.product import Product
+
 """
 Industry Rule (IMPORTANT):
 Service code should read like English.
@@ -119,8 +122,11 @@ class ProductService:
     # ✅ FIX 2: Parameter naam "discount_percent" hona chahiye (test file mein yahi use ho raha hai)
     # ❌ GALTI: "discount_percentage" likha tha lekin test mein "discount_percent" call ho raha tha
     # 📌 RULE: Function signature aur caller mein parameter names match hone chahiye
-    #
+    
+    #====================================================
     # PUBLIC SERVICE METHOD - APPLY DISCOUNT
+    #====================================================
+    
     async def apply_discount(
         self,
         product_id: int,
@@ -154,8 +160,33 @@ class ProductService:
             # 7) Rollback in case of error
             await self.session.rollback()
             raise
-    # PRIVATE HELPER METHODS (OOP CONCEPT)
-
+        
+        
+        
+    # =====================================================
+    #GET PRODUCT BY ID (OPTIONAL)
+    # =====================================================
+    
+    async def get_products(
+        self,
+        search: Optional[str] = None,
+    ) -> list[Product]:
+        
+        products = await self.product_repo.get_all_active()
+        
+        #simple search filter and business logic
+        if search:
+            products = [
+                p for p in products
+                if search.lower() in p.name.lower()
+            ]
+        return products    
+    
+    
+    
+# =====================================================    
+# PRIVATE HELPER METHODS (OOP CONCEPT)
+# =====================================================
     async def _get_product_or_fail(self, product_id: int) -> Product:
         """
         Helper method ka role:

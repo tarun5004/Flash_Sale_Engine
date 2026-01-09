@@ -31,3 +31,32 @@ status → HTTP status codes (201, 400, 404)
 Class ka naam matter karta hai usage ke liye
 
 
+
+
+
+🧠 Schema vs ORM model (CONFUSION CLEAR)
+Cheez	Kya kaam
+ORM Model (Product)	Database structure
+Schema (ProductUpdatePriceSchema)	API contract
+Service	Business logic
+Router	Traffic controller
+🔒 Security angle (important)
+
+Schema ke bina:
+Client kuch bhi bhej sakta
+Extra fields aa sakte
+Database corrupt ho sakta
+Schema ke saath:
+Strict contract
+Clear boundary
+Predictable system
+🧠 Real-life analogy (best one)
+Socho:
+Schema = exam form
+Sirf name, roll no allowed
+Agar tum mobile number likh do → reject
+Backend bhi waise hi behave karta hai 😄
+
+
+
+

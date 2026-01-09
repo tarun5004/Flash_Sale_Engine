@@ -17,3 +17,9 @@ class ProductResponseSchema(BaseModel):
     
     class Config:
         from_attributes = True
+        
+class ProductUpdatepriceSchema(BaseModel):
+    price: Decimal
+    
+class ProductApplyDiscountSchema(BaseModel):
+    discount_percentage: Decimal
