@@ -3,7 +3,8 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession   #DB session ka type (async)
 from app.db.session import get_db   #har request pe ek naya DB session provide karega
 from app.services.product_service import ProductService  #service layer jo business logic handle karega and always remember router kabhi business logic nahi likhta
-
+from sqlalchemy import select
+from fastapi import Query
 
 
 from app.schemas.product_schema import (
@@ -106,3 +107,22 @@ async def get_products(
 ):
     service = ProductService(session)
     return await service.get_products(search=search)
+
+
+@router.get(
+    "",
+    response_model=list[ProductResponseSchema],
+)
+async def get_products(
+    page: int = Query(1, ge=1),
+    limit: int = Query(10, le=50),
+    search: Optional[str] = None,
+    session: AsyncSession = Depends(get_db),
+):
+    service = ProductService(session)
+    
+    return await service.get_products(
+        page=page,
+        limit=limit,
+        search=search,
+    )

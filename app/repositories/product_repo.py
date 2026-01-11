@@ -1,7 +1,9 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, or_
 
 from app.models.product import Product
+#ORM queries hamesha Model Class pe hoti hain,
+#kabhi module ya lowercase name pe nahi
 
 
 class ProductRepository:
@@ -42,3 +44,63 @@ class ProductRepository:
             select(Product).where(Product.is_active == True)
         )
         return result.scalars().all()
+    
+    async def search_active_products(self, keyword: str):
+        stmt = (
+            select(Product)
+            .where(
+                product.is_active == True,
+                Product.name.ilike(f"%{keyword}%")  #ilike = case-insensitive LIKE %keyword% = kahin bhi ho
+            )
+        )
+        result = await self.session.execute(stmt)
+        return result.scalars().all()
+    
+    
+    async def search_active_products_multi(self, keywords: list[str]):
+        """
+        keywords = ["notenook", "pro"]
+        """
+        conditions = [] #ye list SQL conditions store karegi like , name ILIKE '%notenook%', name ILIKE '%pro%'
+        
+        for word in keywords:        #har word ke liye partial match
+            conditions.append(Product.name.ilike(f"%{word}%"))        #%word% = kahin bhi ho
+            
+        stmt = (
+            select(Product)
+            .where(
+                Product.is_active == True,
+                or_(*conditions)
+            )
+        )
+        result = await self.session.execute(stmt)
+        return result.scalars().all()
+    
+    
+    async def get_active_products_paginated(
+        self,
+        *,
+        offset: int,
+        limit: int,
+        keywords: list[str] | None = None, #optional parameter mean karte hain taaki hum same method se search + normal listing dono kar saken
+    ):
+        stmt = select(Product).where(Product.is_active == True)
+        
+        #Search condition
+        
+        if keywords:
+            conditions = [
+                Product.name.ilike(f"%{word}%")
+                for word in keywords
+            ]
+            stmt = stmt.where(or_(*conditions))
+            
+        # Pagination
+        stmt = stmt.offset(offset).limit(limit)
+        
+        result = await self.session.execute(stmt)  #mean self - current ProductService ka object , session - uska DB session
+        return result.scalars().all()
+    
+#offset / limit → DB-level pagination (FAST)
+#keywords optional → same method handles search + normal list
+#Repo sirf query likhta hai, decision nahi

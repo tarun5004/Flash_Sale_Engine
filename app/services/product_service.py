@@ -1,11 +1,12 @@
 from decimal import Decimal
+from re import search
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.product import Product
 from app.repositories.product_repo import ProductRepository
 
 from typing import List, Optional
-from app.models.product import Product
+
 
 """
 Industry Rule (IMPORTANT):
@@ -167,21 +168,63 @@ class ProductService:
     #GET PRODUCT BY ID (OPTIONAL)
     # =====================================================
     
-    async def get_products(
+    """async def get_products(
         self,
         search: Optional[str] = None,
-    ) -> list[Product]:
+    ) -> List[Product]:
         
-        products = await self.product_repo.get_all_active()
+        if not search:
+            return await self.product_repo.get_all_active()
         
-        #simple search filter and business logic
+        # 1) Clean search text
+        search = search.strip().lower() #extra spaces hatao , case issue avoid karo
+        
+        # 2) split into words
+        keywords = search.split()   #keywords = ["notebook", "pro"]
+        
+        # 3) Call repo 
+        return await self.product_repo.search_active_products_multi(keywords)  #service ne decide kiya , repo ne query ki 
+# Later hum add kar sakte hain:
+# AND logic (all words must match)
+# Ranking (best match first)
+# PostgreSQL Full Text Search
+# ElasticSearch """
+
+
+
+
+    async def get_products(
+        self,
+        *,
+        page: int = 1,
+        limit: int = 10,
+        search: Optional[str] = None, #hum optional search isslie use karte hain taaki user search na bhi kare to bhi chale
+    ) -> List[Product]: #ye method paginated products return karega meaning limited number of products per page
+        
+        
+        
+        #Saftey rules
+        if page < 1:
+            raise ValueError("Page must be >= 1")
+        
+        if limit < 1 or limit > 50:
+            raise ValueError("Limit must be between 1 and 50")
+        
+        offset = (page - 1) * limit
+        
+        keywords = None
         if search:
-            products = [
-                p for p in products
-                if search.lower() in p.name.lower()
-            ]
-        return products    
-    
+            search = search.strip().lower() #extra spaces hatao , case issue avoid karo
+            keywords = search.split()  #keywords = ["notebook", "pro"] taaki hum bole ki inme se koi bhi word match kare
+            
+        return await self.product_repo.get_active_products_paginated(
+            offset=offset,
+            limit=limit,
+            keywords=keywords,
+        )
+
+    # self- current ProductService object, >product_repo - us object ke andar jo repository ka object hai, .get_active_products_paginated() → repo ka ek function call
+    # service ke pass repo ka phone number hai, service repo ko call kar raha hai 
     
     
 # =====================================================    
