@@ -226,7 +226,33 @@ class ProductService:
     # self- current ProductService object, >product_repo - us object ke andar jo repository ka object hai, .get_active_products_paginated() → repo ka ek function call
     # service ke pass repo ka phone number hai, service repo ko call kar raha hai 
     
+
+    # =====================================================
+    #Update stock method
+    # =====================================================
     
+    async def update_stock(
+        self,
+        product_id: int,
+        new_stock: int,
+    ) -> Product:
+        try:
+            # 1) Validation business rules
+            if new_stock < 0:
+                raise ValueError("Stock cannot be negative")
+                
+            # 2) Product fetch with lock
+            product = await self.product_repo.get_by_id_for_update(product_id)
+            if product is None:
+                raise ValueError(f"Product with id {product_id} does not found")
+            product.stock = new_stock  #3) Update ORM object
+            await self.session.commit()  #4) Commit transaction
+            return product
+        except Exception:
+            await self.session.rollback() #5) Rollback in case of error
+            raise   
+
+
 # =====================================================    
 # PRIVATE HELPER METHODS (OOP CONCEPT)
 # =====================================================
@@ -243,6 +269,8 @@ class ProductService:
             raise ValueError(f"Product with id {product_id} does not exist")
 
         return product
+    
+    
 
     # VALIDATION HELPERS (STATIC METHODS)
     @staticmethod
@@ -272,4 +300,7 @@ class ProductService:
         
         if discount_percent >= 100:
             raise ValueError("Discount percentage must be less than 100")
-            
+        
+        
+        
+        

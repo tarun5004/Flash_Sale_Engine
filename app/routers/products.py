@@ -5,7 +5,9 @@ from app.db.session import get_db   #har request pe ek naya DB session provide k
 from app.services.product_service import ProductService  #service layer jo business logic handle karega and always remember router kabhi business logic nahi likhta
 from sqlalchemy import select
 from fastapi import Query
+from pydantic import BaseModel
 
+# router means HTTP endpoints ka grouping by DOMAIN (yaha domain = products)
 
 from app.schemas.product_schema import (
     ProductCreateSchema,
@@ -125,4 +127,23 @@ async def get_products(
         page=page,
         limit=limit,
         search=search,
+    )
+    
+    
+class UpdateStockRequest(BaseModel):
+    stock: int
+    
+@router.patch(
+    "/{product_id}/stock",
+    response_model=ProductResponseSchema,
+)
+async def update_product_stock(
+    product_id: int,
+    payload: UpdateStockRequest,
+    session: AsyncSession = Depends(get_db),
+):
+    service = ProductService(session)
+    return await service.update_stock(
+        product_id=product_id,
+        new_stock=payload.stock,
     )

@@ -79,7 +79,7 @@ class ProductRepository:
     
     async def get_active_products_paginated(
         self,
-        *,
+        *,           #mean iske baad ke saare parameters sirf keyword arguments se hi pass honge.
         offset: int,
         limit: int,
         keywords: list[str] | None = None, #optional parameter mean karte hain taaki hum same method se search + normal listing dono kar saken
@@ -104,3 +104,18 @@ class ProductRepository:
 #offset / limit → DB-level pagination (FAST)
 #keywords optional → same method handles search + normal list
 #Repo sirf query likhta hai, decision nahi
+
+
+async def get_by_id_for_update(self, product_id: int) -> Product | None:
+    """
+    row-level lock ke saath product fetch karta hai
+    (future: order / stock concurrency ke liye base)
+    
+    """
+    
+    result = await self.session.execute(
+        select(Product)
+        .where(Product.id == product_id)
+        .with_for_update()  #raw lock - jab tak transaction complete nahi hota tab tak koi or update nahi kar skta 
+    )
+    return result.scalar_one_or_none

@@ -58,5 +58,13 @@ Agar tum mobile number likh do → reject
 Backend bhi waise hi behave karta hai 😄
 
 
+what is raw lock - example ek shop mai 1 notebook hia custome1 bolta hai ye mujhe dedo customer 2 ussie time pe bolta hai ye mujhe dedo 
+ese mai stock -1 overselling , isse ko rokne ke lie hum rawkock use karte hai mean 
+jabtak mai iss product ko update kar raha hu koi or is raw ko toch nahi karega 
+
+
+Atomic update ensures correctness,
+Row lock ensures consistency under concurrency.
+
 
 
