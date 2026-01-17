@@ -7,7 +7,7 @@ class ProductCreateSchema(BaseModel):
     price: Decimal
     stock: int
 
-class ProductResponseSchema(BaseModel):
+class ProductResponseSchema(BaseModel): #response schema for product jisse koi extra fields na mile 
     id: int
     name: str
     price: Decimal

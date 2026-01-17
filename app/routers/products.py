@@ -1,6 +1,7 @@
 from typing import Optional, List
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession   #DB session ka type (async)
+from app.db import session
 from app.db.session import get_db   #har request pe ek naya DB session provide karega
 from app.services.product_service import ProductService  #service layer jo business logic handle karega and always remember router kabhi business logic nahi likhta
 from sqlalchemy import select
@@ -147,3 +148,50 @@ async def update_product_stock(
         product_id=product_id,
         new_stock=payload.stock,
     )
+    
+    
+    
+    
+class UpdateNameRequest(BaseModel): #request body schema for updating name
+    name: str
+    
+    
+@router.patch(
+    "/{product_id}/name",
+    response_model=ProductResponseSchema,
+)
+async def update_product_name(
+    product_id: int,
+    payload: UpdateNameRequest,
+    session: AsyncSession = Depends(get_db),
+):
+    service = ProductService(session)
+    return await service.update_name(
+        product_id=product_id,
+        new_name=payload.name,
+    )
+    
+    
+# Endpoint to deactivate and reactivate a product
+
+@router.patch(
+    "/{product_id}/activate",
+    response_model=ProductResponseSchema,
+)
+async def activate_product(
+    product_id: int,
+    session: AsyncSession = Depends(get_db),
+):
+    service = ProductService(session)
+    return await service.activate_product(product_id)
+
+@router.patch(
+    "/{product_id}/deactivate",
+    response_model=ProductResponseSchema,
+)
+async def deactivate_product(
+    product_id: int,
+    session: AsyncSession = Depends(get_db),
+):
+    service = ProductService(session)
+    return await service.deactivate_product(product_id)

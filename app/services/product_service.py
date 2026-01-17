@@ -252,6 +252,64 @@ class ProductService:
             await self.session.rollback() #5) Rollback in case of error
             raise   
 
+# =====================================================
+#update name method
+# =====================================================
+
+    async def update_name(
+        self,
+        product_id: int,
+        new_name: str,
+    ):
+        try:
+            if not new_name or len(new_name.strip()) <3:
+                raise ValueError("Name must be at least 3 characters long")
+            product = await self.product_repo.get_by_id_for_update(product_id)
+            if product is None:
+                raise ValueError(f"Product with id {product_id} does not found")
+            cleaned_name = new_name.strip()
+            if product.name == cleaned_name:
+                raise ValueError("New name must be different from the current name")
+            product.name = cleaned_name
+            await self.session.commit()
+            return product
+        except Exception:
+            await self.session.rollback()
+            raise
+        
+# =====================================================
+# Activate / Deactivate product method
+# =====================================================
+
+    async def activate_product(self, product_id: int):
+        try:
+            product = await self.product_repo.get_by_id_for_update(product_id)
+            if product is None:
+                raise ValueError(f"Product with id {product_id} does not found")
+            
+            if product.is_active:
+                raise ValueError("Product is already active")
+            
+            product.is_active = True
+            await self.session.commit()
+            return product
+        except Exception:   
+            await self.session.rollback()
+            raise
+        
+        
+    async def deactivate_product(self, product_id: int):
+        try:
+            product = await self.product_repo.get_by_id_for_update(product_id)
+            if product is None:
+                raise ValueError(f"Product with id {product_id} does not found")
+            
+            product.is_active = False
+            await self.session.commit()
+            return product
+        except Exception:
+            await self.session.rollback()
+            raise   
 
 # =====================================================    
 # PRIVATE HELPER METHODS (OOP CONCEPT)
