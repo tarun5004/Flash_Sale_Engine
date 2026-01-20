@@ -7,6 +7,7 @@ from app.services.product_service import ProductService  #service layer jo busin
 from sqlalchemy import select
 from fastapi import Query
 from pydantic import BaseModel
+from app.schemas.product_image_schema import (ProductImageCreate, ProductImageResponse,)
 
 # router means HTTP endpoints ka grouping by DOMAIN (yaha domain = products)
 
@@ -195,3 +196,34 @@ async def deactivate_product(
 ):
     service = ProductService(session)
     return await service.deactivate_product(product_id)
+
+# Endpoint to add an image to a product
+@router.post(
+    "/{product_id}/images",
+    response_model=ProductImageResponse,
+)
+async def add_product_image(
+    product_id: int,
+    payload: ProductImageCreate,
+    session: AsyncSession = Depends(get_db),
+):
+    service = ProductService(session)
+    return await service.add_product_image(
+        product_id=product_id,
+        image_url=payload.image_url,
+    )
+    
+    
+    
+# Endpoint to soft delete a product 
+
+@router.delete(
+    "/{product_id}",
+    response_model=ProductResponseSchema,
+)
+async def soft_delete_product(
+    product_id: int,
+    session: AsyncSession = Depends(get_db),
+):
+        service = ProductService(session)
+        return await service.deactivate_product(product_id)

@@ -14,6 +14,7 @@ class ProductResponseSchema(BaseModel): #response schema for product jisse koi e
     stock:int
     is_active: bool
     created_at: datetime
+    updated_at: datetime
     
     class Config:
         from_attributes = True

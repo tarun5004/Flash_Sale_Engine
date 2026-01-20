@@ -67,4 +67,23 @@ Atomic update ensures correctness,
 Row lock ensures consistency under concurrency.
 
 
+Without back_populates:
+SQLAlchemy ko manually samjhana padta
+With back_populates:
+Product ko pata hai uski images kaun si hain
+Image ko pata hai uska product kaun sa hai
 
+
+flush() → ID lene ke liye
+
+commit() → final save
+
+product_id → image ka malik
+
+relationship() → Python list/object
+
+back_populates → two-way link
+
+CASCADE → clean delete
+
+Config → ORM → response bridge

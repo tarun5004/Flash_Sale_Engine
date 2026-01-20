@@ -1,6 +1,8 @@
 from sqlalchemy import Column, Integer, String, Boolean, Numeric, DateTime, func
 from app.db.base import Base
 from sqlalchemy.orm import relationship
+from sqlalchemy import DateTime
+from sqlalchemy.sql import func
 
 class Product(Base):
     __tablename__ = "products"
@@ -16,4 +18,11 @@ class Product(Base):
         "ProductImage",
         back_populates="product",
         cascade="all, delete-orphan",
+    )
+    
+    updated_at = Column(
+        DateTime,
+        server_default=func.now(),  #when product is created set timestamp
+        onupdate=func.now(),     #when product is updated set timestamp
+        nullable=False,
     )

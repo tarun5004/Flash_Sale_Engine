@@ -7,6 +7,8 @@ from app.repositories.product_repo import ProductRepository
 
 from typing import List, Optional
 
+from app.models.product_image import ProductImage
+
 
 """
 Industry Rule (IMPORTANT):
@@ -310,6 +312,34 @@ class ProductService:
         except Exception:
             await self.session.rollback()
             raise   
+        
+        
+        
+        
+# ===================================================
+#Add product image method
+# ===================================================
+
+    async def add_product_image(
+        self,
+        product_id: int,
+        image_url: str,
+    ):
+        try:
+            product = await self.product_repo.get_by_id_for_update(product_id)
+            if product is None:
+                raise ValueError(f"Product with id {product_id} does not found")
+            
+            image = ProductImage(
+                product_id=product.id,
+                image_url=image_url,
+            )
+            self.session.add(image)
+            await self.session.commit()
+            return image
+        except Exception:
+            await self.session.rollback()
+            raise
 
 # =====================================================    
 # PRIVATE HELPER METHODS (OOP CONCEPT)
