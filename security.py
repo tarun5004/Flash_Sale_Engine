@@ -1,4 +1,7 @@
 from passlib.context import CryptContext
+from datetime import datetime, timedelta   #current time nikalne ke liye , token expire calculate karne ke liye # time add karne ke liye Ex- datetime.utcnow() + timedelta(minutes=30)
+
+from jose import jwt, JWTError   # time add karne ke liye Ex- datetime.utcnow() + timedelta(minutes=30)
 
 #bcrypt context for hashing passwords
 pwd_context = CryptContext(
@@ -26,6 +29,7 @@ def verify_password(
     
     
 """
-JWT LOGIC
+JWT LOGIC Utility File
+
 
 """

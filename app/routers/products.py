@@ -112,7 +112,9 @@ async def get_products(
     service = ProductService(session)
     return await service.get_products(search=search)
 
-
+# ===============================================
+# Advanced: Pagination, Filtering, Stock Update, Name Update, Activate/Deactivate, Add Image, Soft Delete
+# ===============================================
 @router.get(
     "",
     response_model=list[ProductResponseSchema],

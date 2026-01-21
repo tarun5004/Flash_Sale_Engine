@@ -87,3 +87,11 @@ back_populates → two-way link
 CASCADE → clean delete
 
 Config → ORM → response bridge
+
+
+JWT utlity = helper functions jo ye kaam karte hai 
+- JWT token banana 
+- JWT token verify karna
+- Token se user info niklna 
+taaki router / service me ganda code na likhna pade 
+industry rule - Security + Auth logic always put in utility
