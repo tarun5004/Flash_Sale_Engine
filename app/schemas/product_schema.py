@@ -6,6 +6,12 @@ class ProductCreateSchema(BaseModel):
     name: str
     price: Decimal
     stock: int
+    
+    @classmethod
+    def validate_price(cls, v):
+        if v < 0:
+            raise ValueError("Price must be non-negative")
+        return v
 
 class ProductResponseSchema(BaseModel): #response schema for product jisse koi extra fields na mile 
     id: int
@@ -22,5 +28,11 @@ class ProductResponseSchema(BaseModel): #response schema for product jisse koi e
 class ProductUpdatepriceSchema(BaseModel):
     price: Decimal
     
+    @classmethod
+    def validate_price(cls, v):
+        if v < 0:
+            raise ValueError("Price must be non-negative")
+        return v
+
 class ProductApplyDiscountSchema(BaseModel):
     discount_percentage: Decimal

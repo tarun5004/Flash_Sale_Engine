@@ -95,3 +95,9 @@ JWT utlity = helper functions jo ye kaam karte hai
 - Token se user info niklna 
 taaki router / service me ganda code na likhna pade 
 industry rule - Security + Auth logic always put in utility
+
+
+jo filed db genrate karti hai woh serilazation ke time danger zone hoti hai
+updated_at ne error isslie dia kyuki woh db genrated hai 
+or serilazation ke time SQLAlchemy usko lazy load karna chata haijab async
+db context alredy khtm ho chuka hota hai

@@ -6,7 +6,13 @@ class ProductImageCreate(BaseModel):
 class ProductImageResponse(BaseModel):
     id: int
     image_url: HttpUrl
-        
+    is_primary: bool = False  
+    
+    """why?
+    UI ko btana hota hai:
+    kaunsi image tumbnail hai
+    kaunsi image primary hai
+    """
     class Config:
         from_attributes = True
         """FastAPI ORM object (User) -
