@@ -2,7 +2,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from decimal import Decimal
 
-from app.models.order import Order, OrderStatus
+from app.models.order import Order, OrderStatus, OutOfStockError
 from app.models.product import Product
 from app.repositories.product_repo import ProductRepository
 from app.repositories.order_repo import OrderRepository
@@ -69,3 +69,30 @@ class OrderService:
         except Exception as e:
             await self.session.rollback()
             raise e
+            
+
+    async def place_order(self, user_id, product_id, quantity):
+        async with self.session.begin():
+            product = await self.product_repo.get_by_id_for_update(product_id)
+
+            if product.stock < quantity:
+                raise OutOfStockError("Insufficient stock for the product.")
+            
+            product.stock -= quantity
+
+            order = Order(
+                user_id=user_id,
+                product_id=product_id,
+                quantity=quantity,
+                status=OrderStatus.PENDING
+            )
+
+            self.session.add(order)
+
+            #lock relaeased here when transaction ends
+            try:
+                await self.payment_service.charge(order)
+                await self._mark_paid(order.id)
+            except PaymentFailed:
+                await self._compensate_stock(order.id)
+                raise PaymentFailed("Payment processing failed.")
