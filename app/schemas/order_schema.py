@@ -22,6 +22,7 @@ class OrderCreate(BaseModel):
     
 class OrderRead(BaseModel):
     id: int
+    user_id: int
     product_id: int
     quantity: int
     total_amount: Decimal

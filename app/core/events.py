@@ -2,6 +2,14 @@ from fastapi import FastAPI
 from app.db.session import engine
 from app.db.base import Base
 
+# Models must be imported before create_all — registers them with Base.metadata
+from app.models.product import Product  # noqa: F401
+from app.models.product_image import ProductImage  # noqa: F401
+from app.models.user import User  # noqa: F401
+from app.models.order import Order  # noqa: F401
+from app.models.payment import Payment  # noqa: F401
+from app.models.cart_item import CartItem  # noqa: F401
+
 
 def register_events(app: FastAPI) -> None:
     """Register event handlers for the FastAPI application."""

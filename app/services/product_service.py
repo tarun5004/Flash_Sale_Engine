@@ -35,6 +35,17 @@ class ProductService:
         self.product_repo = ProductRepository(session)
 
     # =====================================================
+    # PUBLIC SERVICE METHOD → GET SINGLE PRODUCT
+    # =====================================================
+    async def get_product_by_id(self, product_id: int) -> ProductResponseSchema:
+        """Fetch a single product by ID. Returns 404-friendly ValueError if not found."""
+        self._validate_product_id(product_id)
+        product = await self.product_repo.get_by_id(product_id)
+        if product is None:
+            raise ValueError(f"Product with id {product_id} not found")
+        return self._to_response(product)
+
+    # =====================================================
     # PUBLIC SERVICE METHOD → CREATE PRODUCT
     # =====================================================
     async def create_product(

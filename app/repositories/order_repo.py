@@ -25,4 +25,14 @@ class OrderRepository:
             .where(Order.id == order_id)
         )
         return result.scalar_one_or_none()
+
+    async def get_by_user_id(self, user_id: int) -> list[Order]:
+        """Fetch all orders for a user, newest first."""
+        result = await self.session.execute(
+            select(Order)
+            .options(selectinload(Order.product))
+            .where(Order.user_id == user_id)
+            .order_by(Order.created_at.desc())
+        )
+        return list(result.scalars().all())
         

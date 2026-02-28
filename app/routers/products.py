@@ -138,6 +138,25 @@ async def get_products(
 
 
 # ==============================================
+# GET SINGLE PRODUCT
+# ==============================================
+@router.get(
+    "/{product_id}",
+    response_model=ProductResponseSchema,
+)
+async def get_product(
+    product_id: int,
+    session: AsyncSession = Depends(get_db),
+):
+    """Fetch a single product by ID."""
+    service = ProductService(session)
+    try:
+        return await service.get_product_by_id(product_id)
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+
+
+# ==============================================
 # UPDATE STOCK
 # ==============================================
 class UpdateStockRequest(BaseModel):

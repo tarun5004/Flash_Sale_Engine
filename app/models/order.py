@@ -1,8 +1,8 @@
 from sqlalchemy import(
     Column,
     Integer,
-    ForeignKey,
     Numeric,
+    ForeignKey,
     DateTime,
     Enum as sqlEnum,
     CheckConstraint
@@ -22,8 +22,8 @@ class OrderStatus(enum.Enum):
 class Order(Base):
     __tablename__ = "orders"
 
-    __table_args__ =(
-        CheckConstraint("quantity > 0", name="ck_orrder_quantity_positive") # Ensure quantity is positive,
+    __table_args__ = (
+        CheckConstraint("quantity > 0", name="ck_order_quantity_positive"),
     )
 
     id = Column(Integer, primary_key=True)
@@ -50,6 +50,12 @@ class Order(Base):
         index=True,
     )
 
+    # Precomputed at order time — avoids price drift if product price changes later
+    total_amount = Column(
+        Numeric(12, 2),
+        nullable=False,
+    )
+
     created_at = Column(
         DateTime(timezone=True),
         server_default=func.now(),
@@ -58,4 +64,5 @@ class Order(Base):
     )
 
     user = relationship("User")
-    product = relationship("Product", lazy="joined")  # Eagerly load product details with each order
+    # Eager-loaded — avoids extra queries when building order responses
+    product = relationship("Product", lazy="joined")

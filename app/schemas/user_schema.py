@@ -16,10 +16,22 @@ class UserRead(BaseModel):
     id: int
     email: EmailStr
     is_active: bool
-    role: str                          #admin or user
     created_at: datetime
+
     class Config:
         from_attributes = True
+
+
+class LoginRequest(BaseModel):
+    """Separate from UserCreate — login may diverge (e.g. 2FA fields later)"""
+    email: EmailStr
+    password: str
+
+
+class TokenResponse(BaseModel):
+    """JWT response contract — matches OAuth2 password flow spec"""
+    access_token: str
+    token_type: str = "bearer"
         
         
         

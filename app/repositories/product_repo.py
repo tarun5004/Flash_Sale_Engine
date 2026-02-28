@@ -26,6 +26,15 @@ class ProductRepository:
         return product
 
     # -------------------------
+    # GET PRODUCT BY ID (no lock — read-only)
+    # -------------------------
+    async def get_by_id(self, product_id: int) -> Product | None:
+        result = await self.session.execute(
+            select(Product).where(Product.id == product_id)
+        )
+        return result.scalar_one_or_none()
+
+    # -------------------------
     # GET PRODUCT WITH LOCK
     # -------------------------
     async def get_by_id_for_update(self, product_id: int) -> Product | None:
@@ -49,8 +58,8 @@ class ProductRepository:
         stmt = (
             select(Product)
             .where(
-                product.is_active == True,
-                Product.name.ilike(f"%{keyword}%")  #ilike = case-insensitive LIKE %keyword% = kahin bhi ho
+                Product.is_active == True,  # Fixed: was lowercase 'product' — NameError at runtime
+                Product.name.ilike(f"%{keyword}%")
             )
         )
         result = await self.session.execute(stmt)
@@ -104,18 +113,3 @@ class ProductRepository:
 #offset / limit → DB-level pagination (FAST)
 #keywords optional → same method handles search + normal list
 #Repo sirf query likhta hai, decision nahi
-
-
-async def get_by_id_for_update(self, product_id: int) -> Product | None:
-    """
-    row-level lock ke saath product fetch karta hai
-    (future: order / stock concurrency ke liye base)
-    
-    """
-    
-    result = await self.session.execute(
-        select(Product)
-        .where(Product.id == product_id)
-        .with_for_update()  #raw lock - jab tak transaction complete nahi hota tab tak koi or update nahi kar skta 
-    )
-    return result.scalar_one_or_none
