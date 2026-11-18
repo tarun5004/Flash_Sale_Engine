@@ -30,8 +30,10 @@ Alembic is the database migration tool for SQLAlchemy. It tracks schema changes 
 |----------|---------|
 | Raw SQL files | No dependency tracking, manual ordering |
 | Django-style auto-migrations | SQLAlchemy doesn't have this built-in |
-| ORM sync (`create_all`) | Destroys data, no rollback, no history |
+| Table creation (`create_all`) | Creates missing tables; no migration of existing schemas, no version history or downgrade path |
 | Manual DDL | Human error, no audit trail |
+
+With its default `checkfirst=True`, SQLAlchemy's [`MetaData.create_all()`](https://docs.sqlalchemy.org/en/20/core/metadata.html#sqlalchemy.schema.MetaData.create_all) skips tables that already exist; it does not delete their rows. It also does not alter those tables when a model changes. The application's startup uses it for initial table creation, while evolving an existing schema needs a separate migration workflow.
 
 ### Why Alembic Specifically?
 
